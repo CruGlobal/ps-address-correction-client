@@ -15,15 +15,18 @@ public class AddressCorrectionService
     private final String serviceUsername;
     private final String servicePassword;
     private final String endpointAddressOverride;
+    private final DebugPrinter debugPrinter;
 
     public AddressCorrectionService(
         String serviceUsername,
         String servicePassword,
-        String endpointAddressOverride)
+        String endpointAddressOverride,
+        DebugPrinter debugPrinter)
     {
         this.serviceUsername = serviceUsername;
         this.servicePassword = servicePassword;
         this.endpointAddressOverride = endpointAddressOverride;
+        this.debugPrinter = debugPrinter;
     }
 
     public CorrectionResult correctAddress(Address address)
@@ -31,14 +34,29 @@ public class AddressCorrectionService
         PostalsoftService service =
             new Util_002fPostalSoft().getUtil_002fPostalSoftHttpPort();
         overrideAddressIfNecessary(service);
+        debugPrinter.printEndpointUrl(service);
 
-
+        debugPrinter.correcting(address);
         PostalAddress postalAddress = createPostalAddress(address);
 
         org.ccci.webservices.services.postalsoft.CorrectionResult postalsoftResult =
-            service.correctAddress(serviceUsername, servicePassword, postalAddress);
+            correctAddress(service, postalAddress);
 
         return createResult(postalsoftResult);
+    }
+
+    private org.ccci.webservices.services.postalsoft.CorrectionResult correctAddress(PostalsoftService service,
+        PostalAddress postalAddress)
+    {
+        try
+        {
+            return service.correctAddress(serviceUsername, servicePassword, postalAddress);
+        }
+        catch (RuntimeException e)
+        {
+            debugPrinter.exception(e);
+            throw e;
+        }
     }
 
     private void overrideAddressIfNecessary(PostalsoftService service)
@@ -77,7 +95,13 @@ public class AddressCorrectionService
         result.setSuccessful(success);
         if (success)
         {
-            result.setAddress(createAddress(postalsoftResult.getAddress().getValue()));
+            Address address = createAddress(postalsoftResult.getAddress().getValue());
+            debugPrinter.success(address);
+            result.setAddress(address);
+        }
+        else
+        {
+            debugPrinter.failure();
         }
         return result;
     }

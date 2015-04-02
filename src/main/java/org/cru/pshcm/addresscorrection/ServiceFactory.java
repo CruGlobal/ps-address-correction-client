@@ -9,17 +9,35 @@ public class ServiceFactory
     private static final String USER_ENV = "ADDRESS_CORRECTION_USER";
     private static final String PASSWORD_ENV = "ADDRESS_CORRECTION_PASSWORD";
     private static final String URL_ENV = "ADDRESS_CORRECTION_URL";
+    private static final String DEBUG_ENV = "ADDRESS_CORRECTION_DEBUG";
+
+
     private static ServiceFactory instance;
 
     private final String user;
     private final String password;
     private final String url;
+    private final boolean debug;
 
-    private ServiceFactory(String user, String password, String url)
+    ServiceFactory(String user, String password, String url, boolean debug)
     {
         this.user = user;
         this.password = password;
         this.url = url;
+        this.debug = debug;
+
+        if (debug) {
+
+            // the jdk-provided jax-ws client uses this
+            System.setProperty(
+                "com.sun.xml.internal.ws.transport.http.client.HttpTransportPipe.dump",
+                "true");
+
+            // just in case there's another jax-ws client, we'll set this too
+            System.setProperty(
+                "com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump",
+                "true");
+        }
     }
 
     public static synchronized ServiceFactory getFactory() {
@@ -33,7 +51,8 @@ public class ServiceFactory
         instance = new ServiceFactory(
             getRequiredEnvVariable(USER_ENV),
             getRequiredEnvVariable(PASSWORD_ENV),
-            System.getenv(URL_ENV));
+            System.getenv(URL_ENV),
+            Boolean.parseBoolean(System.getenv(DEBUG_ENV)));
     }
 
     private static String getRequiredEnvVariable(String name)
@@ -47,13 +66,10 @@ public class ServiceFactory
         return value;
     }
 
-    public static synchronized ServiceFactory getFactory(String user, String password, String url) {
-        if (instance == null)
-            instance = new ServiceFactory(user, password, url);
-        return instance;
-    }
-
     public AddressCorrectionService buildService() {
-        return new AddressCorrectionService(user, password, url);
+        DebugPrinter debugPrinter = debug ?
+            new ActualDebugPrinter(System.out) :
+            new NoOpDebugPrinter();
+        return new AddressCorrectionService(user, password, url, debugPrinter);
     }
 }

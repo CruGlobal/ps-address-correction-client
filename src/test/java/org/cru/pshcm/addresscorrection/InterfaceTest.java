@@ -7,15 +7,12 @@ public class InterfaceTest
 {
     public static void main(String[] args)
     {
-        System.setProperty(
-            "com.sun.xml.internal.ws.transport.http.client.HttpTransportPipe.dump",
-            "true");
 
-
-        ServiceFactory factory = ServiceFactory.getFactory(
+        ServiceFactory factory = new ServiceFactory(
             args[0],
             args[1],
-            null
+            null,
+            true
         );
         AddressCorrectionService service = factory.buildService();
 
@@ -27,7 +24,5 @@ public class InterfaceTest
         address.setZip("80525");
 
         CorrectionResult result = service.correctAddress(address);
-
-        System.out.println("successful: " + result.isSuccessful());
     }
 }
