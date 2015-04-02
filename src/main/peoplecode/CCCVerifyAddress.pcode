@@ -15,52 +15,63 @@ Function CCCVerifyAddress(&Recname As string)
       End-If;
    End-If;
 
-   /* set up the initial addrress */
+   /* set up the initial address */
+   &oAddress = CreateJavaObject("org.cru.pshcm.addresscorrection.Address");
    If &Recname = "ADDRESS_SBR" Then
-      &oAddr = CreateJavaObject("org.ccci.postalsoft.PostalAddress");
-      &oObjFactory = CreateJavaObject("org.ccci.postalsoft.ObjectFactory");
-      &oAddr.setAddressLine1(&oObjFactory.createPostalAddressAddressLine1(ADDRESS_SBR.ADDRESS1));
-      &oAddr.setAddressLine2(&oObjFactory.createPostalAddressAddressLine2(ADDRESS_SBR.ADDRESS2));
-      &oAddr.setAddressLine3(&oObjFactory.createPostalAddressAddressLine3(ADDRESS_SBR.ADDRESS3));
-      &oAddr.setCity(&oObjFactory.createPostalAddressCity(ADDRESS_SBR.CITY));
-      &oAddr.setState(&oObjFactory.createPostalAddressState(ADDRESS_SBR.STATE));
-      &oAddr.setZip(&oObjFactory.createPostalAddressZip(ADDRESS_SBR.POSTAL));
+      &oAddress.setAddressLine1(ADDRESS_SBR.ADDRESS1);
+      &oAddress.setAddressLine2(ADDRESS_SBR.ADDRESS2);
+      &oAddress.setAddressLine3(ADDRESS_SBR.ADDRESS3);
+      &oAddress.setCity(ADDRESS_SBR.CITY);
+      &oAddress.setState(ADDRESS_SBR.STATE);
+      &oAddress.setZip(ADDRESS_SBR.POSTAL);
    Else
-      &oAddr = CreateJavaObject("org.ccci.postalsoft.PostalAddress");
-      &oObjFactory = CreateJavaObject("org.ccci.postalsoft.ObjectFactory");
-      &oAddr.setAddressLine1(&oObjFactory.createPostalAddressAddressLine1(DERIVED_ADDRESS.ADDRESS1));
-      &oAddr.setAddressLine2(&oObjFactory.createPostalAddressAddressLine2(DERIVED_ADDRESS.ADDRESS2));
-      &oAddr.setAddressLine3(&oObjFactory.createPostalAddressAddressLine3(DERIVED_ADDRESS.ADDRESS3));
-      &oAddr.setCity(&oObjFactory.createPostalAddressCity(DERIVED_ADDRESS.CITY));
-      &oAddr.setState(&oObjFactory.createPostalAddressState(DERIVED_ADDRESS.STATE));
-      &oAddr.setZip(&oObjFactory.createPostalAddressZip(DERIVED_ADDRESS.POSTAL));
+      &oAddress.setAddressLine1(DERIVED_ADDRESS.ADDRESS1);
+      &oAddress.setAddressLine2(DERIVED_ADDRESS.ADDRESS2);
+      &oAddress.setAddressLine3(DERIVED_ADDRESS.ADDRESS3);
+      &oAddress.setCity(DERIVED_ADDRESS.CITY);
+      &oAddress.setState(DERIVED_ADDRESS.STATE);
+      &oAddress.setZip(DERIVED_ADDRESS.POSTAL);
    End-If;
 
-   /* Get the address correction service, */
-
-   &oAddressCorrectionSvc = CreateJavaObject("org.ccci.postalsoft.Util_002fPostalSoft").getUtil_002fPostalSoftHttpPort();
-
-   /* correct the address */
-   &oCorrectionResult = &oAddressCorrectionSvc.correctAddress("pshr", "DisneyIsLocatedInOrlando", &oAddr);
-
-   &oPostalsoftHelper = GetJavaClass("org.cru.postalsoft.PostalsoftHelper");
+   /* Get the address correction service */
+   &oAddressCorrectionService = GetJavaClass("org.cru.pshcm.addresscorrection.ServiceFactory").getFactory.buildService();
+   
+   &oCorrectionResult = &oAddressCorrectionService.correctAddress(&oAddress);
 
    /* fetch pieces of the address */
-   If &Recname = "ADDRESS_SBR" Then
-      ADDRESS_SBR.ADDRESS1 = &oPostalsoftHelper.getAddressLine1(&oCorrectionResult);
-      ADDRESS_SBR.ADDRESS2 = &oPostalsoftHelper.getAddressLine2(&oCorrectionResult);
-      ADDRESS_SBR.ADDRESS3 = &oPostalsoftHelper.getAddressLine3(&oCorrectionResult);
-      ADDRESS_SBR.CITY = &oPostalsoftHelper.getCity(&oCorrectionResult);
-      ADDRESS_SBR.STATE = &oPostalsoftHelper.getState(&oCorrectionResult);
-      ADDRESS_SBR.POSTAL = &oPostalsoftHelper.getZip(&oCorrectionResult);
+   If &oCorrectedAddress.isSuccessful() Then
+      &oCorrectedAddress = &oCorrectionResult.getCorrectedAddress();
+      If &Recname = "ADDRESS_SBR" Then
+         ADDRESS_SBR.ADDRESS1 = &oCorrectedAddress.getAddressLine1();
+         ADDRESS_SBR.ADDRESS2 = &oCorrectedAddress.getAddressLine2();
+         ADDRESS_SBR.ADDRESS3 = &oCorrectedAddress.getAddressLine3();
+         ADDRESS_SBR.CITY = &oCorrectedAddress.getCity();
+         ADDRESS_SBR.STATE = &oCorrectedAddress.getState();
+         ADDRESS_SBR.POSTAL = &oCorrectedAddress.getZip();
+      Else
+         DERIVED_ADDRESS.ADDRESS1 = &oCorrectedAddress.getAddressLine1();
+         DERIVED_ADDRESS.ADDRESS2 = &oCorrectedAddress.getAddressLine2();
+         DERIVED_ADDRESS.ADDRESS3 = &oCorrectedAddress.getAddressLine3();
+         DERIVED_ADDRESS.CITY = &oCorrectedAddress.getCity();
+         DERIVED_ADDRESS.STATE = &oCorrectedAddress.getState();
+         DERIVED_ADDRESS.POSTAL = &oCorrectedAddress.getZip();
+      End-If;
    Else
-      DERIVED_ADDRESS.ADDRESS1 = &oPostalsoftHelper.getAddressLine1(&oCorrectionResult);
-      DERIVED_ADDRESS.ADDRESS2 = &oPostalsoftHelper.getAddressLine2(&oCorrectionResult);
-      DERIVED_ADDRESS.ADDRESS3 = &oPostalsoftHelper.getAddressLine3(&oCorrectionResult);
-      DERIVED_ADDRESS.CITY = &oPostalsoftHelper.getCity(&oCorrectionResult);
-      DERIVED_ADDRESS.STATE = &oPostalsoftHelper.getState(&oCorrectionResult);
-      DERIVED_ADDRESS.POSTAL = &oPostalsoftHelper.getZip(&oCorrectionResult);
-
+      If &Recname = "ADDRESS_SBR" Then
+         ADDRESS_SBR.ADDRESS1 = "";
+         ADDRESS_SBR.ADDRESS2 = "";
+         ADDRESS_SBR.ADDRESS3 = "";
+         ADDRESS_SBR.CITY = "";
+         ADDRESS_SBR.STATE = "";
+         ADDRESS_SBR.POSTAL = "";
+      Else
+         DERIVED_ADDRESS.ADDRESS1 = "";
+         DERIVED_ADDRESS.ADDRESS2 = "";
+         DERIVED_ADDRESS.ADDRESS3 = "";
+         DERIVED_ADDRESS.CITY = "";
+         DERIVED_ADDRESS.STATE = "";
+         DERIVED_ADDRESS.POSTAL = "";
+      End-If;
    End-If;
 
 End-Function; /* VerifyAddress*/

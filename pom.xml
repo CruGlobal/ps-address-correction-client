@@ -15,6 +15,13 @@
   </properties>
 
   <dependencies>
+
+    <dependency>
+      <groupId>org.ccci</groupId>
+      <artifactId>wsapi-postalsoft-client</artifactId>
+      <version>1-SNAPSHOT</version>
+    </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
