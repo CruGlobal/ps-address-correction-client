@@ -6,6 +6,9 @@ package org.cru.pshcm.addresscorrection;
 public class ServiceFactory
 {
 
+    private static final String USER_ENV = "ADDRESS_CORRECTION_USER";
+    private static final String PASSWORD_ENV = "ADDRESS_CORRECTION_PASSWORD";
+    private static final String URL_ENV = "ADDRESS_CORRECTION_URL";
     private static ServiceFactory instance;
 
     private final String user;
@@ -21,11 +24,27 @@ public class ServiceFactory
 
     public static synchronized ServiceFactory getFactory() {
         if (instance == null)
-            instance = new ServiceFactory(
-                System.getenv("ADDRESS_CORRECTION_USER"),
-                System.getenv("ADDRESS_CORRECTION_PASSWORD"),
-                System.getenv("ADDRESS_CORRECTION_URL"));
+            initializeFromEnvironment();
         return instance;
+    }
+
+    private static void initializeFromEnvironment()
+    {
+        instance = new ServiceFactory(
+            getRequiredEnvVariable(USER_ENV),
+            getRequiredEnvVariable(PASSWORD_ENV),
+            System.getenv(URL_ENV));
+    }
+
+    private static String getRequiredEnvVariable(String name)
+    {
+        String value = System.getenv(name);
+        if (value == null) {
+            String message = "required environment variable " + name + " is not set";
+            System.err.println(message);
+            throw new IllegalStateException(message);
+        }
+        return value;
     }
 
     public static synchronized ServiceFactory getFactory(String user, String password, String url) {
