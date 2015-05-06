@@ -1,0 +1,43 @@
+<assembly>
+  <id>dist</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <dependencySets>
+    <dependencySet>
+      <excludes>
+        <!--
+          these are not used by us;
+          they are specified by a super-pom.
+        -->
+        <exclude>com.google.guava:guava</exclude>
+        <exclude>joda-time:joda-time</exclude>
+      </excludes>
+      <unpack>false</unpack>
+      <outputDirectory>lib</outputDirectory>
+      <outputFileNameMapping>
+        ${artifact.artifactId}${dashClassifier?}.${artifact.extension}
+      </outputFileNameMapping>
+      <useProjectArtifact>true</useProjectArtifact>
+    </dependencySet>
+  </dependencySets>
+  <fileSets>
+    <fileSet>
+      <directory>src/main/peoplecode</directory>
+      <includes>
+        <include>*.pcode</include>
+      </includes>
+      <outputDirectory>.</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>.</directory>
+      <includes>
+        <include>readme.md</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>src/main/java</directory>
+      <outputDirectory>src/java</outputDirectory>
+    </fileSet>
+  </fileSets>
+</assembly>
