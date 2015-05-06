@@ -33,7 +33,7 @@ public class ServiceFactory
                 "com.sun.xml.internal.ws.transport.http.client.HttpTransportPipe.dump",
                 "true");
 
-            // just in case there's another jax-ws client, we'll set this too
+            // just in case the non-jdk jax-ws client is in use, we'll set this too
             System.setProperty(
                 "com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump",
                 "true");
