@@ -35,7 +35,7 @@ Function CCCVerifyAddress(&Recname As string)
 
    /* Get the address correction service */
    &oAddressCorrectionService = GetJavaClass("org.cru.pshcm.addresscorrection.ServiceFactory").getFactory.buildService();
-   
+
    &oCorrectionResult = &oAddressCorrectionService.correctAddress(&oAddress);
 
    /* fetch pieces of the address */
