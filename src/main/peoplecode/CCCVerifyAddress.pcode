@@ -39,7 +39,7 @@ Function CCCVerifyAddress(&Recname As string)
    &oCorrectionResult = &oAddressCorrectionService.correctAddress(&oAddress);
 
    /* fetch pieces of the address */
-   If &oCorrectedAddress.isSuccessful() Then
+   If &oCorrectionResult.isSuccessful() Then
       &oCorrectedAddress = &oCorrectionResult.getCorrectedAddress();
       If &Recname = "ADDRESS_SBR" Then
          ADDRESS_SBR.ADDRESS1 = &oCorrectedAddress.getAddressLine1();
