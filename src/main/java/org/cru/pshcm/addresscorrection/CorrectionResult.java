@@ -6,7 +6,7 @@ package org.cru.pshcm.addresscorrection;
 public class CorrectionResult
 {
     private boolean successful;
-    private Address address;
+    private Address correctedAddress;
 
     public boolean isSuccessful()
     {
@@ -18,13 +18,13 @@ public class CorrectionResult
         this.successful = successful;
     }
 
-    public Address getAddress()
+    public Address getCorrectedAddress()
     {
-        return address;
+        return correctedAddress;
     }
 
-    public void setAddress(Address address)
+    public void setCorrectedAddress(Address address)
     {
-        this.address = address;
+        this.correctedAddress = address;
     }
 }

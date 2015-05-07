@@ -97,7 +97,7 @@ public class AddressCorrectionService
         {
             Address address = createAddress(postalsoftResult.getAddress().getValue());
             debugPrinter.success(address);
-            result.setAddress(address);
+            result.setCorrectedAddress(address);
         }
         else
         {
