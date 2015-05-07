@@ -12,19 +12,19 @@ import javax.xml.ws.BindingProvider;
  */
 public class AddressCorrectionService
 {
-    private final String serviceUsername;
-    private final String servicePassword;
+    private final String systemId;
+    private final String systemKey;
     private final String endpointAddressOverride;
     private final DebugPrinter debugPrinter;
 
     public AddressCorrectionService(
-        String serviceUsername,
-        String servicePassword,
+        String systemId,
+        String systemKey,
         String endpointAddressOverride,
         DebugPrinter debugPrinter)
     {
-        this.serviceUsername = serviceUsername;
-        this.servicePassword = servicePassword;
+        this.systemId = systemId;
+        this.systemKey = systemKey;
         this.endpointAddressOverride = endpointAddressOverride;
         this.debugPrinter = debugPrinter;
     }
@@ -50,7 +50,7 @@ public class AddressCorrectionService
     {
         try
         {
-            return service.correctAddress(serviceUsername, servicePassword, postalAddress);
+            return service.correctAddress(systemId, systemKey, postalAddress);
         }
         catch (RuntimeException e)
         {

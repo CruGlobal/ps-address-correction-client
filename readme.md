@@ -11,8 +11,8 @@ Usage
 
  1. Put ps-address-correction-client.jar and wsapi-postalsoft-client.jar on peoplesoft's classpath.
  2. Set up environment variables:
-     *  `ADDRESS_CORRECTION_USER` - the username to authenticate with
-     *  `ADDRESS_CORRECTION_PASSWORD` - the password to authenticate with
+     *  `ADDRESS_CORRECTION_SYSID` - the system id to authenticate with
+     *  `ADDRESS_CORRECTION_SYSKEY` - the system key to authenticate with
      *  `ADDRESS_CORRECTION_URL` - (optional) the wsapi url to use.
         If this is not present, the wsapi url will be determined by the embedded wsdl in
         wsapi-postalsoft-client.jar.

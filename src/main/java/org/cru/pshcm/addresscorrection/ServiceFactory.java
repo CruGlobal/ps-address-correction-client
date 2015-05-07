@@ -6,23 +6,23 @@ package org.cru.pshcm.addresscorrection;
 public class ServiceFactory
 {
 
-    private static final String USER_ENV = "ADDRESS_CORRECTION_USER";
-    private static final String PASSWORD_ENV = "ADDRESS_CORRECTION_PASSWORD";
+    private static final String SYSTEM_ID_ENV = "ADDRESS_CORRECTION_SYSID";
+    private static final String SYSTEM_KEY_ENV = "ADDRESS_CORRECTION_SYSKEY";
     private static final String URL_ENV = "ADDRESS_CORRECTION_URL";
     private static final String DEBUG_ENV = "ADDRESS_CORRECTION_DEBUG";
 
 
     private static ServiceFactory instance;
 
-    private final String user;
-    private final String password;
+    private final String systemId;
+    private final String systemKey;
     private final String url;
     private final boolean debug;
 
-    ServiceFactory(String user, String password, String url, boolean debug)
+    ServiceFactory(String systemId, String systemKey, String url, boolean debug)
     {
-        this.user = user;
-        this.password = password;
+        this.systemId = systemId;
+        this.systemKey = systemKey;
         this.url = url;
         this.debug = debug;
 
@@ -49,8 +49,8 @@ public class ServiceFactory
     private static void initializeFromEnvironment()
     {
         instance = new ServiceFactory(
-            getRequiredEnvVariable(USER_ENV),
-            getRequiredEnvVariable(PASSWORD_ENV),
+            getRequiredEnvVariable(SYSTEM_ID_ENV),
+            getRequiredEnvVariable(SYSTEM_KEY_ENV),
             System.getenv(URL_ENV),
             Boolean.parseBoolean(System.getenv(DEBUG_ENV)));
     }
@@ -70,6 +70,6 @@ public class ServiceFactory
         DebugPrinter debugPrinter = debug ?
             new ActualDebugPrinter(System.out) :
             new NoOpDebugPrinter();
-        return new AddressCorrectionService(user, password, url, debugPrinter);
+        return new AddressCorrectionService(systemId, systemKey, url, debugPrinter);
     }
 }
