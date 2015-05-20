@@ -31,4 +31,9 @@ public class NoOpDebugPrinter implements DebugPrinter
     public void exception(RuntimeException e)
     {
     }
+
+    @Override
+    public void printInitializationDebugInfo()
+    {
+    }
 }

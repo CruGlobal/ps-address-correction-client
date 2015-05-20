@@ -16,4 +16,6 @@ public interface DebugPrinter
     void failure();
 
     void exception(RuntimeException e);
+
+    void printInitializationDebugInfo();
 }

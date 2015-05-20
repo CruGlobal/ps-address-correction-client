@@ -17,14 +17,13 @@ public class ServiceFactory
     private final String systemId;
     private final String systemKey;
     private final String url;
-    private final boolean debug;
+    private DebugPrinter debugPrinter;
 
     ServiceFactory(String systemId, String systemKey, String url, boolean debug)
     {
         this.systemId = systemId;
         this.systemKey = systemKey;
         this.url = url;
-        this.debug = debug;
 
         if (debug) {
 
@@ -38,6 +37,16 @@ public class ServiceFactory
                 "com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump",
                 "true");
         }
+
+        debugPrinter = buildDebugPrinter(debug);
+        debugPrinter.printInitializationDebugInfo();
+    }
+
+    private DebugPrinter buildDebugPrinter(boolean debug)
+    {
+        return debug ?
+            new ActualDebugPrinter(System.out) :
+            new NoOpDebugPrinter();
     }
 
     public static synchronized ServiceFactory getFactory() {
@@ -67,9 +76,6 @@ public class ServiceFactory
     }
 
     public AddressCorrectionService buildService() {
-        DebugPrinter debugPrinter = debug ?
-            new ActualDebugPrinter(System.out) :
-            new NoOpDebugPrinter();
         return new AddressCorrectionService(systemId, systemKey, url, debugPrinter);
     }
 }

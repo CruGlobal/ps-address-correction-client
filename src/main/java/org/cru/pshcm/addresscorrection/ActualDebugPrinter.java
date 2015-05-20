@@ -1,9 +1,16 @@
 package org.cru.pshcm.addresscorrection;
 
 import org.ccci.postalsoft.PostalsoftService;
+import org.ccci.postalsoft.Util_002fPostalSoft;
 
 import javax.xml.ws.BindingProvider;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.net.JarURLConnection;
+import java.net.URL;
+import java.util.Map;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 /**
  * @author Matt Drees
@@ -16,6 +23,60 @@ public class ActualDebugPrinter implements DebugPrinter
     public ActualDebugPrinter(PrintStream out)
     {
         this.out = out;
+    }
+
+    @Override
+    public void printInitializationDebugInfo()
+    {
+        debugCodeSource(Util_002fPostalSoft.class, "wsapi-postalsoft-client jar");
+        debugCodeSource(ServiceFactory.class, "ps-address-correction-client jar");
+    }
+
+    private void debugCodeSource(Class<?> classInJar, String jarDescription)
+    {
+        out.println("debug information for " + jarDescription + ":");
+        URL classResource = classInJar.getResource(classInJar.getSimpleName() + ".class");
+        if (classResource.getProtocol().equals("jar"))
+        {
+            debugJarInformation(classResource);
+        }
+        else
+        {
+            debugNonJarInformation(classInJar);
+        }
+        out.println();
+    }
+
+    private void debugJarInformation(URL classResource)
+    {
+        try
+        {
+            JarURLConnection connection = (JarURLConnection) classResource.openConnection();
+
+            URL jarFileURL = connection.getJarFileURL();
+            out.println("location: " + jarFileURL);
+
+            Manifest manifest = connection.getManifest();
+            out.println("manifest:");
+            Attributes mainAttributes = manifest.getMainAttributes();
+            for (Map.Entry<Object, Object> entry : mainAttributes.entrySet())
+            {
+                out.println("  " + entry.getKey() + ": " + entry.getValue());
+            }
+        }
+        catch (IOException e)
+        {
+            out.println("unable to read jar " + classResource);
+            e.printStackTrace(out);
+        }
+    }
+
+    private void debugNonJarInformation(Class<?> classInJar)
+    {
+        out.println("classes are actually not in a jar.");
+        URL location =
+            classInJar.getProtectionDomain().getCodeSource().getLocation();
+        out.println("location: " + location);
     }
 
     @Override
