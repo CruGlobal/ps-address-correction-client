@@ -44,6 +44,10 @@ public class ServiceFactory
 
     private DebugPrinter buildDebugPrinter(boolean debug)
     {
+        System.out.println(
+            "address correction client debug output " +
+            (debug ? "enabled" : "disabled"));
+
         return debug ?
             new ActualDebugPrinter(System.out) :
             new NoOpDebugPrinter();
