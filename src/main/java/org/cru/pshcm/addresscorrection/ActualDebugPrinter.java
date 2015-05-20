@@ -6,8 +6,12 @@ import org.ccci.postalsoft.Util_002fPostalSoft;
 import javax.xml.ws.BindingProvider;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.InetAddress;
 import java.net.JarURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -88,6 +92,22 @@ public class ActualDebugPrinter implements DebugPrinter
             .get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
 
         out.println("address correction url: " + url);
+
+        try
+        {
+            String host = new URI(url).getHost();
+            out.println("which DNS resolves to: " + InetAddress.getByName(host).getHostAddress() );
+        }
+        catch (URISyntaxException e)
+        {
+            out.println("cannot parse url:");
+            e.printStackTrace(out);
+        }
+        catch (UnknownHostException e)
+        {
+            out.println("unable to resolve hostname:");
+            e.printStackTrace(out);
+        }
     }
 
     @Override
