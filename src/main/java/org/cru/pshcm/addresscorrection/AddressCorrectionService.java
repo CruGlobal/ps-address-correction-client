@@ -31,6 +31,19 @@ public class AddressCorrectionService
 
     public CorrectionResult correctAddress(Address address)
     {
+        try
+        {
+            return correctAddressWithoutExceptionHandling(address);
+        }
+        catch (RuntimeException e)
+        {
+            debugPrinter.exception(e);
+            throw e;
+        }
+    }
+
+    private CorrectionResult correctAddressWithoutExceptionHandling(Address address)
+    {
         PostalsoftService service =
             new Util_002fPostalSoft().getUtil_002fPostalSoftHttpPort();
         overrideAddressIfNecessary(service);
@@ -40,23 +53,9 @@ public class AddressCorrectionService
         PostalAddress postalAddress = createPostalAddress(address);
 
         org.ccci.webservices.services.postalsoft.CorrectionResult postalsoftResult =
-            correctAddress(service, postalAddress);
+            service.correctAddress(systemId, systemKey, postalAddress);
 
         return createResult(postalsoftResult);
-    }
-
-    private org.ccci.webservices.services.postalsoft.CorrectionResult correctAddress(PostalsoftService service,
-        PostalAddress postalAddress)
-    {
-        try
-        {
-            return service.correctAddress(systemId, systemKey, postalAddress);
-        }
-        catch (RuntimeException e)
-        {
-            debugPrinter.exception(e);
-            throw e;
-        }
     }
 
     private void overrideAddressIfNecessary(PostalsoftService service)

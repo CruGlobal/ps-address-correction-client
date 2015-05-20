@@ -133,7 +133,8 @@ public class ActualDebugPrinter implements DebugPrinter
     @Override
     public void exception(RuntimeException e)
     {
-        out.println("exception calling address correction service:");
+        out.println("exception correcting address:");
         e.printStackTrace(out);
+        out.flush();
     }
 }
