@@ -6,6 +6,10 @@ for WSAPI's address correction service.
 The wrapper makes it convenient to use the client from Peoplecode.
 
 
+It also installs a workaround that fixes an apparent peoplesoft URL-handling bug,
+that sometimes causes jax-ws to use an `HttpURLConnection` on `https` URLs,
+which can wreak havok of various sorts.
+
 Usage
 -----
 
@@ -36,3 +40,17 @@ Usage
 
  3. Call the client from peoplecode.
     See CCCVerifyAddress.pcode for an example.
+
+
+Fine Print
+----------
+
+This library uses internal implementation classes in Oracle's JRE.
+(This is acceptable for us because the peoplesoft jvm is an Oracle jvm.)
+Therefore, this project will only compile against an oracle JDK.
+
+
+Specifically, we are using the `com.sun.xml.internal.ws.*` classes
+that make up the jax-ws implementation.
+We are also using reflection to access private fields in `java.net.URL`,
+which may not be present in other JREs.

@@ -8,9 +8,11 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.JarURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.jar.Attributes;
@@ -93,6 +95,28 @@ public class ActualDebugPrinter implements DebugPrinter
 
         out.println("address correction url: " + url);
 
+        debugDnsLookup(url);
+
+        try
+        {
+            URL location = new URL(url);
+            URLConnection urlConnection = location.openConnection();
+
+            out.println("URLConnection for this url: " + urlConnection);
+
+        }
+        catch (MalformedURLException e)
+        {
+            e.printStackTrace(out);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace(out);
+        }
+    }
+
+    private void debugDnsLookup(String url)
+    {
         try
         {
             String host = new URI(url).getHost();

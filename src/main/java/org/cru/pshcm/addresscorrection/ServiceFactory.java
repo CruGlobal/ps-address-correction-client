@@ -36,6 +36,8 @@ public class ServiceFactory
             System.setProperty(
                 "com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump",
                 "true");
+
+            DebuggingTransportTubeFactory.setDebug(true);
         }
 
         debugPrinter = buildDebugPrinter(debug);
