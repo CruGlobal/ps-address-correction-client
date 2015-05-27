@@ -37,11 +37,11 @@ public class ServiceFactory
                 "com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump",
                 "true");
 
-            DebuggingTransportTubeFactory.setDebug(true);
         }
 
         debugPrinter = buildDebugPrinter(debug);
-        debugPrinter.printInitializationDebugInfo();
+        HttpsHandlerEnforcingTransportTubeFactory.setDebugPrinter(debugPrinter);
+        debugPrinter.printInitializationDebugInfo(url);
     }
 
     private DebugPrinter buildDebugPrinter(boolean debug)

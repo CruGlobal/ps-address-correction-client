@@ -8,6 +8,8 @@ public class InterfaceTest
     public static void main(String[] args)
     {
 
+//        URL.setURLStreamHandlerFactory(new StupidURLStreamHandlerFactory());
+
         ServiceFactory factory = new ServiceFactory(
             args[0],
             args[1],

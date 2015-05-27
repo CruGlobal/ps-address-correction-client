@@ -1,14 +1,19 @@
 package org.cru.pshcm.addresscorrection;
 
+import com.sun.xml.internal.ws.api.EndpointAddress;
+import com.sun.xml.internal.ws.api.message.Packet;
 import org.ccci.postalsoft.PostalsoftService;
 import org.ccci.postalsoft.Util_002fPostalSoft;
 
 import javax.xml.ws.BindingProvider;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.Field;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.JarURLConnection;
 import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -32,10 +37,17 @@ public class ActualDebugPrinter implements DebugPrinter
     }
 
     @Override
-    public void printInitializationDebugInfo()
+    public void printInitializationDebugInfo(String url)
     {
         debugCodeSource(Util_002fPostalSoft.class, "wsapi-postalsoft-client jar");
         debugCodeSource(ServiceFactory.class, "ps-address-correction-client jar");
+
+        debugUrlHandlerSystemProperty();
+
+        out.println("using address correction soap endpoint url: " + url);
+
+        debugUrlHandlerFactory();
+        debugUrlHandlers(url);
     }
 
     private void debugCodeSource(Class<?> classInJar, String jarDescription)
@@ -85,6 +97,47 @@ public class ActualDebugPrinter implements DebugPrinter
         out.println("location: " + location);
     }
 
+    private void debugUrlHandlerSystemProperty()
+    {
+        String key = "java.protocol.handler.pkgs";
+        String value = System.getProperty(key);
+        out.println("system property " + key + ": " + value);
+    }
+
+    private void debugUrlHandlerFactory()
+    {
+        try
+        {
+            Field factoryField = URL.class.getDeclaredField("factory");
+            factoryField .setAccessible(true);
+            Object factory = factoryField .get(null);
+            out.println("configured url handler factory: " + factory);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace(out);
+        }
+    }
+
+    private void debugUrlHandlers(String url)
+    {
+        try
+        {
+            //make sure the handler gets initialized
+            new URL(url);
+
+            Field handlersField = URL.class.getDeclaredField("handlers");
+            handlersField.setAccessible(true);
+            Object handlersTable = handlersField.get(null);
+            out.println("configured url handlers:");
+            out.println(handlersTable);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace(out);
+        }
+    }
+
     @Override
     public void printEndpointUrl(PostalsoftService service)
     {
@@ -97,17 +150,24 @@ public class ActualDebugPrinter implements DebugPrinter
 
         debugDnsLookup(url);
 
+        URL location;
         try
         {
-            URL location = new URL(url);
-            URLConnection urlConnection = location.openConnection();
-
-            out.println("URLConnection for this url: " + urlConnection);
-
+            location = new URL(url);
         }
         catch (MalformedURLException e)
         {
             e.printStackTrace(out);
+            return;
+        }
+
+        try
+        {
+            URLConnection urlConnection = location.openConnection();
+            out.println("URLConnection for this url: " + urlConnection);
+
+            urlConnection = location.openConnection(Proxy.NO_PROXY);
+            out.println("URLConnection for this url (when opened with Proxy.NO_PROXY): " + urlConnection);
         }
         catch (IOException e)
         {
@@ -181,4 +241,34 @@ public class ActualDebugPrinter implements DebugPrinter
         e.printStackTrace(out);
         out.flush();
     }
+
+    @Override
+    public void beginHttpTransportPipeProcess(Packet request)
+    {
+        out.println("http transport pipe information:");
+        EndpointAddress address = request.endpointAddress;
+        URL url = address.getURL();
+        out.println("endpoint address as URL: " + url);
+        out.println("endpoint address as URI: " + address.getURI());
+
+    }
+
+    @Override
+    public void debugUrlConnection(URLConnection urlConnection)
+    {
+        out.println("url connection: " + urlConnection);
+        if (urlConnection instanceof HttpURLConnection)
+        {
+            HttpURLConnection httpUrlConnection1 = (HttpURLConnection) urlConnection;
+            out.println("using proxy: " + httpUrlConnection1.usingProxy());
+        }
+    }
+
+    @Override
+    public void debug(String s)
+    {
+        out.println(s);
+    }
+
+
 }
