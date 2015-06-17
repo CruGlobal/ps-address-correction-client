@@ -80,7 +80,7 @@ public class AddressCorrectionService
         postalAddress.setAddressLine3(
             factory.createPostalAddressAddressLine3(address.getAddressLine3()));
         postalAddress.setCity(factory.createPostalAddressCity(address.getCity()));
-        postalAddress.setState(factory.createPostalAddressCity(address.getCity()));
+        postalAddress.setState(factory.createPostalAddressState(address.getState()));
         postalAddress.setZip(factory.createPostalAddressZip(address.getZip()));
         return postalAddress;
     }
