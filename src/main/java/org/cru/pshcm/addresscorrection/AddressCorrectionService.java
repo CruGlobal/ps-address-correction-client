@@ -44,16 +44,17 @@ public class AddressCorrectionService
 
     private CorrectionResult correctAddressWithoutExceptionHandling(Address address)
     {
-        PostalsoftService service =
-            new Util_002fPostalSoft().getUtil_002fPostalSoftHttpPort();
-        overrideAddressIfNecessary(service);
-        debugPrinter.printEndpointUrl(service);
+        Util_002fPostalSoft service = new Util_002fPostalSoft();
+        PostalsoftService port = service.getUtil_002fPostalSoftHttpPort();
+        overrideAddressIfNecessary(port);
+        debugPrinter.printWsdlLocation(service);
+        debugPrinter.printEndpointUrl(port);
 
         debugPrinter.correcting(address);
         PostalAddress postalAddress = createPostalAddress(address);
 
         org.ccci.webservices.services.postalsoft.CorrectionResult postalsoftResult =
-            service.correctAddress(systemId, systemKey, postalAddress);
+            port.correctAddress(systemId, systemKey, postalAddress);
 
         return createResult(postalsoftResult);
     }

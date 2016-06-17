@@ -6,6 +6,8 @@ import org.ccci.postalsoft.PostalsoftService;
 import org.ccci.postalsoft.Util_002fPostalSoft;
 
 import javax.xml.ws.BindingProvider;
+import javax.xml.ws.Service;
+import javax.xml.ws.WebServiceClient;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
@@ -268,6 +270,14 @@ public class ActualDebugPrinter implements DebugPrinter
     public void debug(String s)
     {
         out.println(s);
+    }
+
+    @Override
+    public void printWsdlLocation(Util_002fPostalSoft service)
+    {
+        WebServiceClient annotation = service.getClass().getAnnotation(WebServiceClient.class);
+        out.println("wsdl annotation location: " + annotation.wsdlLocation());
+        out.println("wsdl location: " + service.getWSDLDocumentLocation());
     }
 
 
