@@ -5,14 +5,6 @@
   </formats>
   <dependencySets>
     <dependencySet>
-      <excludes>
-        <!--
-          these are not used by us;
-          they are specified by a super-pom.
-        -->
-        <exclude>com.google.guava:guava</exclude>
-        <exclude>joda-time:joda-time</exclude>
-      </excludes>
       <unpack>false</unpack>
       <outputDirectory>lib</outputDirectory>
       <outputFileNameMapping>

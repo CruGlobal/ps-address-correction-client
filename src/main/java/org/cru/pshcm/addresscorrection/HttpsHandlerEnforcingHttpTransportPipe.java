@@ -15,6 +15,9 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
 /**
+ * A HttpTransportPipe that fixes broken EndpointAddress urls, if necessary.
+ * See HttpsHandlerEnforcingTransportTubeFactory for details.
+ *
  * @author Matt Drees
  */
 public class HttpsHandlerEnforcingHttpTransportPipe extends HttpTransportPipe
